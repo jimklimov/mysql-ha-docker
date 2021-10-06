@@ -23,11 +23,22 @@ Basic MySQL HA environment, for advanced and custom configurations see:
 Start environment with
 
 ```
-docker-compose build
+docker-compose pull
 docker-compose up -d
 ```
 
-NOTE: Current `docker-compose.yml` refers to pre-built images, so if you get messages like `mysqlmaster uses an image, skipping` from `docker-compose build`, just proceed with `docker-compose up -d` to download existing ones. Alternately, you can run `docker-compose up --force-recreate` to rebuild locally.
+If you wish to rebuild the images locally run:
+
+```
+docker-compose -f .docker-compose.yml-ci build
+```
+
+or 
+
+```
+docker build mysql/ -t garutilorenzo/mysql-gtid-replication:latest
+docker build heartbeat/ -t garutilorenzo/heartbeat:latest
+```
 
 ### Show cluster status
 
@@ -36,7 +47,7 @@ NOTE: Current `docker-compose.yml` refers to pre-built images, so if you get mes
 Via console:
 
 ```
-yoursystem$ docker-compose exec proxysql bash
+docker-compose exec proxysql bash
 root@proxysql:/# mysql -u admin -pproxysql -h 127.0.0.1 -P6032 -e \
     'select * from stats_mysql_connection_pool;'
 ```
@@ -52,13 +63,13 @@ http://localhost:3000
 Via console:
 
 ```
-yoursystem$ docker-compose exec proxysql bash
+docker-compose exec proxysql bash
 root@proxysql:/# mysql -u super -Ap -h 127.0.0.1 -P3306 -e \
     'select * from percona.heartbeat;'
 Enter password:
 ```
 
-NOTE: the default `superLuser` password for this cluster is defined in `docker-compose.yml` file, in the heartbeat section.
+NOTE: all the cluster's password are defined in grants/users.sql
 
 ### Clean all data
 
