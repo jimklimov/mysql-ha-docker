@@ -76,3 +76,42 @@ NOTE: all the cluster's password are defined in grants/users.sql
 ```
 docker-compose down -v
 ```
+
+## Running simple tests
+
+Building on points above, and with helper scripts and data in the `tests/`
+subdirectory, you can check in practice that HA replication works and SQL
+access via proxy is possible with a dedicated `tester` user account.
+
+(Optionally) To surely start from scratch, stop the containers from earlier
+experiments and dismantle the data volumes:
+
+```
+docker-compose down -v
+```
+
+Start the containers (or build locally as detailed above --
+but note that would take some minutes and some traffic):
+
+```
+docker-compose pull
+docker-compose up -d
+```
+
+Populate the database and proxy with user accounts, their rights, and a test
+schema with data. The helper script for this can be re-executed, just would
+complain about operations it can not do (e.g. redefine the same user twice):
+
+```
+./tests/proxysql-add-tester-user.sh
+```
+
+The script completes with a few sanity checks about the ability to use the
+`tester` account with the proxysql, mysqlmaster and mysqlslave instances
+directly, and that replication worked, by selecting the test data on each
+instance.
+
+Finally, run tests over that data with:
+```
+./tests/proxysql-select-tests.sh
+```
