@@ -26,6 +26,7 @@ echo ""
 echo "=== LEFT JOIN t_workgroups into t_rooms (all rooms, and any workgroup data if present):"
 sqlexec "SELECT room, t_rooms.id AS id, workgroup FROM t_rooms LEFT JOIN t_workgroups ON t_rooms.id = t_workgroups.id;"
 
+# NOTE: Not all versions of MySQL had a RIGHT JOIN ability
 echo "=== RIGHT JOIN t_rooms into t_workgroups (should be same as above, double-inversion):"
 sqlexec "SELECT room, t_rooms.id AS id, workgroup FROM t_workgroups RIGHT JOIN t_rooms ON t_rooms.id = t_workgroups.id;"
 
@@ -34,3 +35,7 @@ sqlexec "SELECT room, t_workgroups.id AS id, workgroup FROM t_workgroups LEFT JO
 
 echo "=== INNER JOIN t_rooms into t_workgroups (all rooms that have present workgroup data):"
 sqlexec "SELECT room, t_rooms.id AS id, workgroup FROM t_workgroups INNER JOIN t_rooms ON t_rooms.id = t_workgroups.id;"
+
+# NOTE: MySQL does not offer a (FULL) OUTER JOIN syntax; so there are tricks...
+# https://dev.mysql.com/doc/refman/8.0/en/outer-join-simplification.html
+# https://stackoverflow.com/questions/4796872/how-can-i-do-a-full-outer-join-in-mysql
